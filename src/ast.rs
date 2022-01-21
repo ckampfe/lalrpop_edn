@@ -7,6 +7,7 @@ pub enum Expr<'input> {
     Keyword(string_cache::DefaultAtom),
     Character(char),
     Integer(i64),
+    Float(ordered_float::OrderedFloat<f64>),
     List(Vec<Expr<'input>>),
     Vector(Vec<Expr<'input>>),
     Set(BTreeSet<Expr<'input>>),
