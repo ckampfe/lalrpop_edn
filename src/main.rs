@@ -7,7 +7,7 @@ fn main() {
 
     let mut keywords_cache = std::collections::HashSet::new();
 
-    let s = std::fs::read_to_string("/Users/clark/code/nom_edn/fixtures/deps.edn").unwrap();
+    let s = std::fs::read_to_string("deps.edn").unwrap();
 
     let result = edn::ExprParser::new().parse(&mut keywords_cache, &s);
 
