@@ -1,0 +1,73 @@
+use crate::ast::Expr;
+
+grammar<'env>(keywords: &'env mut std::collections::HashSet<string_cache::DefaultAtom>);
+
+pub Expr: Expr<'input> = {
+    <s:String>             => Expr::String(s),
+    <s:Symbol>             => Expr::Symbol(s),
+    <s:Keyword>            => {
+        let keyword = string_cache::DefaultAtom::from(&s[1..]);
+        let cloned = keyword.clone();
+        keywords.insert(keyword);
+        Expr::Keyword(cloned)
+    },
+    <c:Character>          => Expr::Character(c),
+    <i:Integer>            => Expr::Integer(i),
+    "(" <Series<Expr>> ")" => Expr::List(<>),
+    "[" <Series<Expr>> "]" => Expr::Vector(<>),
+    "{" <Pairs<Expr>> "}"  => Expr::Map(<>.into_iter().collect()),
+    "#{"<Series<Expr>> "}" => Expr::Set(<>.into_iter().collect()),
+}
+
+String: &'input str = {
+    r#""[^"]*""# => <>
+}
+
+Symbol: &'input str = { 
+    // r"([A-Za-z])[A-Za-z0-9\.\*\+!\-_\?\$%\&=<>]*" => <>,
+    r"([A-Za-z])([A-Za-z0-9.*+!\-_?$%&=<>]*)(/[A-Za-z0-9.*+!\-_?$%&=<>]+)?" => <>,
+}
+
+    
+Keyword: &'input str = {
+    ":" <Symbol> => <>,
+}
+
+Character: char = {
+    "\\newline"   => '\n',
+    "\\n"         => '\n',
+    "\\return"    => '\r',
+    "\\r"         => '\r',
+    "\\b"         => '\x08',
+    "\\backspace" => '\x08',
+    "\\space"     => ' ',
+    "\\tab"       => '\t',
+    "\\t"         => '\t',
+    r"\\u(\d|[ABCDEFabcdef]){4}" => {
+        let s = u32::from_str_radix(&<>[2..], 16).expect("could not get u32 from str");
+        char::from_u32(s).expect("could not get char from u32")
+    }
+}
+
+Integer: i64 = {
+    <Int> => <>.parse::<i64>().expect("Could not fit in i64"),
+    <Int> "N" => <>.parse::<i64>().expect("Could not fit in i64"),
+}
+
+Int: &'input str = {
+    <Digits> => <>,
+    "+" <Digits> => <>,
+    "-" <Digits> => <>,
+}
+
+Digits: &'input str = {
+    r"[0-9]+" => <>
+}
+
+Series<Rule>: Vec<Rule> = {
+    <rules: (<Rule> ","*)*> => rules
+}
+
+Pairs<Rule>: Vec<(Rule, Rule)> = {
+    <pairs: (<Rule> ","* <Rule> ","*)*> => pairs
+}
