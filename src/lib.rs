@@ -107,6 +107,14 @@ mod tests {
         assert!(parser.parse(&mut keywords_cache, "+42N").is_ok());
 
         assert!(parser.parse(&mut keywords_cache, "-42N").is_ok());
+
+        assert!(parser
+            .parse(&mut keywords_cache, &(i64::MIN + 1).to_string())
+            .is_ok());
+
+        assert!(parser
+            .parse(&mut keywords_cache, &(i64::MAX).to_string())
+            .is_ok());
     }
 
     #[test]
@@ -142,6 +150,14 @@ mod tests {
         assert!(parser.parse(&mut keywords_cache, "-42.1E+10").is_ok());
 
         assert!(parser.parse(&mut keywords_cache, "-42.1E-10").is_ok());
+
+        assert!(parser
+            .parse(&mut keywords_cache, &format!("{:e}", f64::MIN))
+            .is_ok());
+
+        assert!(parser
+            .parse(&mut keywords_cache, &format!("{:e}", f64::MAX))
+            .is_ok());
     }
 
     #[test]
@@ -156,6 +172,9 @@ mod tests {
         assert!(parser.parse(&mut keywords_cache, "[[], []]").is_ok());
         assert!(parser.parse(&mut keywords_cache, "[[], [],]").is_ok());
         assert!(parser.parse(&mut keywords_cache, "[[], [],,,,,]").is_ok());
+        assert!(parser
+            .parse(&mut keywords_cache, "[1 2 3 :foo hi \"ok\"]")
+            .is_ok());
     }
 
     #[test]
@@ -170,6 +189,9 @@ mod tests {
         assert!(parser.parse(&mut keywords_cache, "((), ())").is_ok());
         assert!(parser.parse(&mut keywords_cache, "((), (),)").is_ok());
         assert!(parser.parse(&mut keywords_cache, "((), (),,,,,)").is_ok());
+        assert!(parser
+            .parse(&mut keywords_cache, "(1 2 3 :foo hi \"ok\")")
+            .is_ok());
     }
 
     #[test]
@@ -185,6 +207,9 @@ mod tests {
         assert!(parser.parse(&mut keywords_cache, "#{#{}, #{},}").is_ok());
         assert!(parser
             .parse(&mut keywords_cache, "#{#{}, #{},,,,,}")
+            .is_ok());
+        assert!(parser
+            .parse(&mut keywords_cache, "#{1 2 3 :foo hi \"ok\"}")
             .is_ok());
     }
 
