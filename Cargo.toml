@@ -10,7 +10,7 @@ lalrpop = "0.19"
 
 [dependencies]
 lalrpop-util = { version = "0.19", features = ["lexer"] }
-ordered-float = "2.8"
+ordered-float = "2.10"
 regex = "1"
 
 [profile.dev.package.lalrpop]
