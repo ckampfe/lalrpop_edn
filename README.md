@@ -14,7 +14,7 @@ assert!(parser.parse(&s).is_ok());
 
 ## TODO
 
-- [x] String
+- [x] Strings
 - [x] Symbols
 - [x] Keywords
 - [x] Characters
