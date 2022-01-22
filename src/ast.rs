@@ -4,7 +4,7 @@ use std::collections::{BTreeMap, BTreeSet};
 pub enum Expr<'input> {
     String(&'input str),
     Symbol(&'input str),
-    Keyword(string_cache::DefaultAtom),
+    Keyword(&'input str),
     Character(char),
     Integer(i64),
     Float(ordered_float::OrderedFloat<f64>),

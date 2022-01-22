@@ -380,7 +380,6 @@ dependencies = [
  "lalrpop-util",
  "ordered-float",
  "regex",
- "string_cache",
 ]
 
 [[package]]
@@ -740,7 +739,6 @@ dependencies = [
  "parking_lot",
  "phf_shared",
  "precomputed-hash",
- "serde",
 ]
 
 [[package]]

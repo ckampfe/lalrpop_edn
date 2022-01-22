@@ -1,16 +1,11 @@
 use crate::ast::Expr;
 
-grammar<'env>(keywords: &'env mut std::collections::HashSet<string_cache::DefaultAtom>);
+grammar;
 
 pub Expr: Expr<'input> = {
     <s:String>             => Expr::String(s),
     <s:Symbol>             => Expr::Symbol(s),
-    <s:Keyword>            => {
-        let keyword = string_cache::DefaultAtom::from(&s[1..]);
-        let cloned = keyword.clone();
-        keywords.insert(keyword);
-        Expr::Keyword(cloned)
-    },
+    <s:Keyword>            => Expr::Keyword(s),
     <c:Character>          => Expr::Character(c),
     <i:Integer>            => Expr::Integer(i),
     <f:Float>              => Expr::Float(f.into()),
