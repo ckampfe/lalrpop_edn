@@ -2,6 +2,8 @@
 
 A [LALRPOP](https://github.com/lalrpop/lalrpop) parser for [edn](https://github.com/edn-format/edn)
 
+[![Rust](https://github.com/ckampfe/lalrpop_edn/actions/workflows/rust.yml/badge.svg)](https://github.com/ckampfe/lalrpop_edn/actions/workflows/rust.yml)
+
 ```rust
 let parser = edn::ExprParser::new();
 
