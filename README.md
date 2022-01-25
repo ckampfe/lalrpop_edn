@@ -26,7 +26,7 @@ assert!(parser.parse(&s).is_ok());
 - [x] Vectors
 - [x] Maps
 - [x] Sets
-- [ ] Nil
+- [x] Nil
 - [ ] Comments
 - [ ] Discard (`#_`)
 - [ ] Tagged elements

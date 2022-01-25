@@ -151,6 +151,13 @@ mod tests {
     }
 
     #[test]
+    fn nil() {
+        let parser = edn::ExprParser::new();
+
+        assert!(parser.parse("nil").is_ok())
+    }
+
+    #[test]
     fn vectors() {
         let parser = edn::ExprParser::new();
 

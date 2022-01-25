@@ -10,6 +10,7 @@ pub Expr: Expr<'input> = {
     <c:Character>          => Expr::Character(c),
     <i:Integer>            => Expr::Integer(i),
     <f:Float>              => Expr::Float(f),
+    <Nil>                  => Expr::Nil,
     "(" <Series<Expr>> ")" => Expr::List(<>),
     "[" <Series<Expr>> "]" => Expr::Vector(<>),
     "{" <Pairs<Expr>> "}"  => Expr::Map(<>.into_iter().collect()),
@@ -63,6 +64,10 @@ Digits: &'input str = {
 Float: FloatPrecision = {
     r"[+-]?([0-9]+)\.([0-9]+)([eE][-+]?[0-9]+)?" => FloatPrecision::Double(<>.parse::<f64>().expect("Unable to parse f64").into()),
     r"[+-]?([0-9]+)M" => FloatPrecision::Exact(rust_decimal::Decimal::from_str(&<>[..(<>.len() - 1)]).expect("Unable to parse decimal")),
+}
+
+Nil: () = {
+    "nil" => ()
 }
 
 Series<Rule>: Vec<Rule> = {
