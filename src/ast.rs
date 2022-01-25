@@ -9,6 +9,7 @@ pub enum Expr<'input> {
     Integer(IntegerPrecision),
     Float(FloatPrecision),
     Nil,
+    Comment,
     List(Vec<Expr<'input>>),
     Vector(Vec<Expr<'input>>),
     Set(BTreeSet<Expr<'input>>),

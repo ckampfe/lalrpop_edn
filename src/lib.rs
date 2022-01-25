@@ -156,6 +156,18 @@ mod tests {
 
         assert!(parser.parse("nil").is_ok())
     }
+    #[test]
+    fn comment() {
+        let parser = edn::ExprParser::new();
+
+        assert!(parser.parse(";").is_ok());
+        assert!(parser.parse(";;").is_ok());
+        assert!(parser.parse(";\n").is_ok());
+        assert!(parser.parse(";;\n").is_ok());
+        assert!(parser.parse("; ()\n").is_ok());
+        assert_eq!(parser.parse("; (1 2 3)").unwrap(), ast::Expr::Comment);
+        assert_eq!(parser.parse("; (1 2 3)\n").unwrap(), ast::Expr::Comment);
+    }
 
     #[test]
     fn vectors() {

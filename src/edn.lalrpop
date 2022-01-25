@@ -10,7 +10,8 @@ pub Expr: Expr<'input> = {
     <c:Character>          => Expr::Character(c),
     <i:Integer>            => Expr::Integer(i),
     <f:Float>              => Expr::Float(f),
-    <Nil>                  => Expr::Nil,
+    Nil                    => Expr::Nil,
+    Comment                => Expr::Comment,
     "(" <Series<Expr>> ")" => Expr::List(<>),
     "[" <Series<Expr>> "]" => Expr::Vector(<>),
     "{" <Pairs<Expr>> "}"  => Expr::Map(<>.into_iter().collect()),
@@ -68,6 +69,10 @@ Float: FloatPrecision = {
 
 Nil: () = {
     "nil" => ()
+}
+
+Comment: () = {
+    r";(.*)\n?" => ()
 }
 
 Series<Rule>: Vec<Rule> = {
