@@ -10,6 +10,7 @@ lalrpop = "0.19"
 
 [dependencies]
 lalrpop-util = { version = "0.19", features = ["lexer"] }
+num-bigint = "0.4"
 ordered-float = "2.10"
 regex = "1"
 rust_decimal = "1.20"

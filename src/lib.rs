@@ -86,7 +86,17 @@ mod tests {
 
         assert!(parser.parse("+42N").is_ok());
 
+        assert!(matches!(
+            parser.parse("+42N").unwrap(),
+            crate::ast::Expr::Integer(crate::ast::IntegerPrecision::Arbitrary(_))
+        ));
+
         assert!(parser.parse("-42N").is_ok());
+
+        assert!(matches!(
+            parser.parse("-42N").unwrap(),
+            crate::ast::Expr::Integer(crate::ast::IntegerPrecision::Arbitrary(_))
+        ));
 
         assert!(parser.parse(&(i64::MIN + 1).to_string()).is_ok());
 
@@ -112,15 +122,15 @@ mod tests {
         assert!(parser.parse("+42M").is_ok());
 
         assert!(matches!(
-            parser.parse("+42M"),
-            Ok(crate::ast::Expr::Float(crate::ast::Precision::Exact(_)))
+            parser.parse("+42M").unwrap(),
+            crate::ast::Expr::Float(crate::ast::FloatPrecision::Exact(_))
         ));
 
         assert!(parser.parse("-42M").is_ok());
 
         assert!(matches!(
-            parser.parse("-42M"),
-            Ok(crate::ast::Expr::Float(crate::ast::Precision::Exact(_)))
+            parser.parse("-42M").unwrap(),
+            crate::ast::Expr::Float(crate::ast::FloatPrecision::Exact(_))
         ));
 
         assert!(parser.parse("-42.1e10").is_ok());

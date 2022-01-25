@@ -1,4 +1,4 @@
-use crate::ast::{Expr, Precision};
+use crate::ast::{Expr, FloatPrecision, IntegerPrecision};
 use std::str::FromStr;
 
 grammar;
@@ -45,9 +45,9 @@ Character: char = {
     }
 }
 
-Integer: i64 = {
-    <Int> => <>.parse::<i64>().expect("Could not fit in i64"),
-    <Int> "N" => <>.parse::<i64>().expect("Could not fit in i64"),
+Integer: IntegerPrecision = {
+    <Int> => IntegerPrecision::Exact(<>.parse::<i64>().expect("Could not fit in i64")),
+    <Int> "N" => IntegerPrecision::Arbitrary(num_bigint::BigInt::from_str(&<>[..(<>.len() - 1)]).expect("Unable to parse integer as BigInt")),
 }
 
 Int: &'input str = {
@@ -60,9 +60,9 @@ Digits: &'input str = {
     r"[0-9]+" => <>
 }
 
-Float: Precision = {
-    r"[+-]?([0-9]+)\.([0-9]+)([eE][-+]?[0-9]+)?" => Precision::Double(<>.parse::<f64>().expect("Unable to parse f64").into()),
-    r"[+-]?([0-9]+)M" => Precision::Exact(rust_decimal::Decimal::from_str(&<>[..(<>.len() - 1)]).expect("Unable to parse decimal")),
+Float: FloatPrecision = {
+    r"[+-]?([0-9]+)\.([0-9]+)([eE][-+]?[0-9]+)?" => FloatPrecision::Double(<>.parse::<f64>().expect("Unable to parse f64").into()),
+    r"[+-]?([0-9]+)M" => FloatPrecision::Exact(rust_decimal::Decimal::from_str(&<>[..(<>.len() - 1)]).expect("Unable to parse decimal")),
 }
 
 Series<Rule>: Vec<Rule> = {

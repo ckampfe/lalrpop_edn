@@ -6,8 +6,8 @@ pub enum Expr<'input> {
     Symbol(&'input str),
     Keyword(&'input str),
     Character(char),
-    Integer(i64),
-    Float(Precision),
+    Integer(IntegerPrecision),
+    Float(FloatPrecision),
     List(Vec<Expr<'input>>),
     Vector(Vec<Expr<'input>>),
     Set(BTreeSet<Expr<'input>>),
@@ -15,7 +15,13 @@ pub enum Expr<'input> {
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq)]
-pub enum Precision {
+pub enum IntegerPrecision {
+    Exact(i64),
+    Arbitrary(num_bigint::BigInt),
+}
+
+#[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq)]
+pub enum FloatPrecision {
     Double(ordered_float::OrderedFloat<f64>),
     Exact(rust_decimal::Decimal),
 }

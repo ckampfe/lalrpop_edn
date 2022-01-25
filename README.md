@@ -19,13 +19,16 @@ assert!(parser.parse(&s).is_ok());
 - [x] Keywords
 - [x] Characters
 - [x] Integers
-- [ ] Integers (arbitrary precision)
+- [x] Integers (arbitrary precision)
 - [x] Floats
 - [x] Floats (exact precision)
 - [x] Lists
 - [x] Vectors
 - [x] Maps
 - [x] Sets
+- [ ] Nil
 - [ ] Comments
 - [ ] Discard (`#_`)
 - [ ] Tagged elements
+- [ ] Get rid of all `.unwrap()`/`.expect()`
+- [ ] Make `num-bigint` and `rust_decimal` optional
