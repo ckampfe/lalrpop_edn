@@ -27,7 +27,7 @@ assert!(parser.parse(&s).is_ok());
 - [x] Maps
 - [x] Sets
 - [x] Nil
-- [ ] Comments
+- [x] Comments
 - [ ] Discard (`#_`)
 - [ ] Tagged elements
 - [ ] Get rid of all `.unwrap()`/`.expect()`
