@@ -111,7 +111,17 @@ mod tests {
 
         assert!(parser.parse("+42M").is_ok());
 
+        assert!(matches!(
+            parser.parse("+42M"),
+            Ok(crate::ast::Expr::Float(crate::ast::Precision::Exact(_)))
+        ));
+
         assert!(parser.parse("-42M").is_ok());
+
+        assert!(matches!(
+            parser.parse("-42M"),
+            Ok(crate::ast::Expr::Float(crate::ast::Precision::Exact(_)))
+        ));
 
         assert!(parser.parse("-42.1e10").is_ok());
 

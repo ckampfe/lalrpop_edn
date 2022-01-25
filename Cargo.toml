@@ -12,6 +12,7 @@ lalrpop = "0.19"
 lalrpop-util = { version = "0.19", features = ["lexer"] }
 ordered-float = "2.10"
 regex = "1"
+rust_decimal = "1.20"
 
 [profile.dev.package.lalrpop]
 opt-level = 3

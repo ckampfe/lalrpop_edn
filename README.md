@@ -21,7 +21,7 @@ assert!(parser.parse(&s).is_ok());
 - [x] Integers
 - [ ] Integers (arbitrary precision)
 - [x] Floats
-- [ ] Floats (exact precision)
+- [x] Floats (exact precision)
 - [x] Lists
 - [x] Vectors
 - [x] Maps

@@ -7,9 +7,15 @@ pub enum Expr<'input> {
     Keyword(&'input str),
     Character(char),
     Integer(i64),
-    Float(ordered_float::OrderedFloat<f64>),
+    Float(Precision),
     List(Vec<Expr<'input>>),
     Vector(Vec<Expr<'input>>),
     Set(BTreeSet<Expr<'input>>),
     Map(BTreeMap<Expr<'input>, Expr<'input>>),
+}
+
+#[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq)]
+pub enum Precision {
+    Double(ordered_float::OrderedFloat<f64>),
+    Exact(rust_decimal::Decimal),
 }
