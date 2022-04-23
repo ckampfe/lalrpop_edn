@@ -1,84 +1,94 @@
-use crate::ast::{Expr, FloatPrecision, IntegerPrecision};
+use crate::ast::{Expr, Float, Integer};
 use std::str::FromStr;
 
 grammar;
 
+match {
+    "("                                          => OPEN_PAREN,
+    ")"                                          => CLOSE_PAREN,
+    "["                                          => OPEN_BRACKET,
+    "]"                                          => CLOSE_BRACKET,
+    "#{"                                         => OPEN_SET,
+    "{"                                          => OPEN_CURLY,
+    "}"                                          => CLOSE_CURLY,
+    r#""[^"]*""#                                 => STRING,
+    r"([A-Za-z*!_?$%&=<>]|([.+-][\D]))([A-Za-z0-9.*+!\-_?$%&=<>]*)"        => IDENTIFIER,
+    "/"                                          => FORWARD_SLASH,
+    ":"                                          => COLON,
+    "+"                                          => PLUS,
+    "-"                                          => MINUS,
+    r"[+-]?[0-9]+"                               => DIGITS,
+    r"[+-]?[0-9]+N"                              => ARBITRARY,
+    r"[+-]?([0-9]+)\.([0-9]+)([eE][-+]?[0-9]+)?" => DOUBLE,
+    r"[+-]?([0-9]+)M"                            => DECIMAL,
+    "nil"                                        => NIL,
+    r";(.*)\n?"                                  => COMMENT,
+    ","                                          => COMMA,
+    "\\newline"                                  => NEWLINE_LONG,
+    "\\n"                                        => NEWLINE_LITERAL,
+    "\\return"                                   => RETURN_LONG,
+    "\\r"                                        => RETURN_LITERAL,
+    "\\backspace"                                => BACKSPACE_LONG,
+    "\\b"                                        => BACKSPACE_LITERAL, 
+    "\\space"                                    => SPACE_LONG,
+    "\\tab"                                      => TAB_LONG,
+    "\\t"                                        => TAB_LITERAL,
+    r"\\u(\d|[ABCDEFabcdef]){4}"                 => UNICODE_CHAR,
+}
+
 pub Expr: Expr<'input> = {
-    <s:String>             => Expr::String(s),
-    <s:Symbol>             => Expr::Symbol(s),
-    <s:Keyword>            => Expr::Keyword(s),
-    <c:Character>          => Expr::Character(c),
-    <i:Integer>            => Expr::Integer(i),
-    <f:Float>              => Expr::Float(f),
-    Nil                    => Expr::Nil,
-    Comment                => Expr::Comment,
-    "(" <Series<Expr>> ")" => Expr::List(<>),
-    "[" <Series<Expr>> "]" => Expr::Vector(<>),
-    "{" <Pairs<Expr>> "}"  => Expr::Map(<>.into_iter().collect()),
-    "#{"<Series<Expr>> "}" => Expr::Set(<>.into_iter().collect()),
-}
-
-String: &'input str = {
-    r#""[^"]*""# => <>
-}
-
-Symbol: &'input str = { 
-    r"([A-Za-z])([A-Za-z0-9.*+!\-_?$%&=<>]*)(/[A-Za-z0-9.*+!\-_?$%&=<>]+)?" => <>,
-}
-
-    
-Keyword: &'input str = {
-    ":" <Symbol> => <>,
+    <s:STRING>                                => Expr::String(s),
+    <s:Symbol>                                => s,
+    <k:Keyword>                               => k,
+    <c:Character>                             => Expr::Character(c),
+    <i:Integer>                               => Expr::Integer(i),
+    <f:Float>                                 => Expr::Float(f),
+    NIL                                       => Expr::Nil,
+    COMMENT                                   => Expr::Comment,
+    OPEN_PAREN <Series<Expr>> CLOSE_PAREN     => Expr::List(<>),
+    OPEN_BRACKET <Series<Expr>> CLOSE_BRACKET => Expr::Vector(<>),
+    OPEN_CURLY <Pairs<Expr>> CLOSE_CURLY      => Expr::Map(<>.into_iter().collect()),
+    OPEN_SET <Series<Expr>> CLOSE_CURLY       => Expr::Set(<>.into_iter().collect()),
 }
 
 Character: char = {
-    "\\newline"   => '\n',
-    "\\n"         => '\n',
-    "\\return"    => '\r',
-    "\\r"         => '\r',
-    "\\b"         => '\x08',
-    "\\backspace" => '\x08',
-    "\\space"     => ' ',
-    "\\tab"       => '\t',
-    "\\t"         => '\t',
-    r"\\u(\d|[ABCDEFabcdef]){4}" => {
+    NEWLINE_LONG      => '\n',
+    NEWLINE_LITERAL   => '\n',
+    RETURN_LONG       => '\r',
+    RETURN_LITERAL    => '\r',
+    BACKSPACE_LITERAL => '\x08',
+    BACKSPACE_LONG    => '\x08',
+    SPACE_LONG        => ' ',
+    TAB_LONG          => '\t',
+    TAB_LITERAL       => '\t',
+    UNICODE_CHAR => {
         let s = u32::from_str_radix(&<>[2..], 16).expect("could not get u32 from str");
         char::from_u32(s).expect("could not get char from u32")
     }
 }
 
-Integer: IntegerPrecision = {
-    <Int> => IntegerPrecision::Exact(<>.parse::<i64>().expect("Could not fit in i64")),
-    <Int> "N" => IntegerPrecision::Arbitrary(num_bigint::BigInt::from_str(&<>[..(<>.len() - 1)]).expect("Unable to parse integer as BigInt")),
+Integer: Integer = {
+    DIGITS => Integer::Exact(<>.parse::<i64>().expect("Could not fit in i64")),
+    ARBITRARY => Integer::Arbitrary(num_bigint::BigInt::from_str(&<>[..(<>.len() - 1)]).expect("Unable to parse integer as BigInt")),
 }
 
-Int: &'input str = {
-    <Digits> => <>,
-    "+" <Digits> => <>,
-    "-" <Digits> => <>,
+Float: Float = {
+    DOUBLE  => Float::Double(<>.parse::<f64>().expect("Unable to parse f64").into()),
+    DECIMAL => Float::Exact(rust_decimal::Decimal::from_str(&<>[..(<>.len() - 1)]).expect("Unable to parse decimal")),
 }
 
-Digits: &'input str = {
-    r"[0-9]+" => <>
+Keyword: Expr<'input> = {
+    COLON <namespace: (<IDENTIFIER> FORWARD_SLASH)?> <name:IDENTIFIER> => Expr::Keyword { namespace, name }
 }
 
-Float: FloatPrecision = {
-    r"[+-]?([0-9]+)\.([0-9]+)([eE][-+]?[0-9]+)?" => FloatPrecision::Double(<>.parse::<f64>().expect("Unable to parse f64").into()),
-    r"[+-]?([0-9]+)M" => FloatPrecision::Exact(rust_decimal::Decimal::from_str(&<>[..(<>.len() - 1)]).expect("Unable to parse decimal")),
-}
-
-Nil: () = {
-    "nil" => ()
-}
-
-Comment: () = {
-    r";(.*)\n?" => ()
+Symbol: Expr<'input> = {
+    <namespace: (<IDENTIFIER> FORWARD_SLASH)?> <name:IDENTIFIER> => Expr::Symbol { namespace, name }
 }
 
 Series<Rule>: Vec<Rule> = {
-    <rules: (<Rule> ","*)*> => rules
+    <rules: (<Rule> COMMA*)*> => rules
 }
 
 Pairs<Rule>: Vec<(Rule, Rule)> = {
-    <pairs: (<Rule> ","* <Rule> ","*)*> => pairs
+    <pairs: (<Rule> COMMA* <Rule> COMMA*)*> => pairs
 }

@@ -9,11 +9,13 @@ edition = "2021"
 lalrpop = "0.19"
 
 [dependencies]
+itoa = "1.0"
 lalrpop-util = { version = "0.19", features = ["lexer"] }
 num-bigint = "0.4"
 ordered-float = "2.10"
 regex = "1"
-rust_decimal = "1.21"
+rust_decimal = "1.23"
+ryu = "1.0"
 
 [profile.dev.package.lalrpop]
 opt-level = 3
