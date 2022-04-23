@@ -28,6 +28,7 @@ assert!(parser.parse(&s).is_ok());
 - [x] Sets
 - [x] Nil
 - [x] Comments
+- [x] `Display` impl
 - [ ] Discard (`#_`)
 - [ ] Tagged elements
 - [ ] Get rid of all `.unwrap()`/`.expect()`
