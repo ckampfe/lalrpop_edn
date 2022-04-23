@@ -67,24 +67,8 @@ impl Display for Expr<'_> {
 
                 Ok(())
             }
-            Expr::Integer(i) => match i {
-                Integer::Exact(i) => {
-                    let mut buffer = itoa::Buffer::new();
-                    let printed = buffer.format(*i);
-                    f.write_str(printed)
-                }
-                Integer::Arbitrary(i) => write!(f, "{}N", i),
-            },
-            Expr::Float(float) => match float {
-                Float::Double(d) => {
-                    let mut buffer = ryu::Buffer::new();
-                    let printed = buffer.format(d.0);
-                    f.write_str(printed)
-                }
-                Float::Exact(d) => {
-                    write!(f, "{}M", d)
-                }
-            },
+            Expr::Integer(i) => write!(f, "{}", i),
+            Expr::Float(float) => write!(f, "{}", float),
             Expr::Nil => f.write_str("nil"),
             Expr::List(l) => write_collection(f, l, "(", ")"),
             Expr::Vector(v) => write_collection(f, v, "[", "]"),
@@ -143,8 +127,36 @@ pub enum Integer {
     Arbitrary(num_bigint::BigInt),
 }
 
+impl Display for Integer {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Integer::Exact(i) => {
+                let mut buffer = itoa::Buffer::new();
+                let printed = buffer.format(*i);
+                f.write_str(printed)
+            }
+            Integer::Arbitrary(i) => write!(f, "{}N", i),
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Hash)]
 pub enum Float {
     Double(ordered_float::OrderedFloat<f64>),
     Exact(rust_decimal::Decimal),
+}
+
+impl Display for Float {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Float::Double(d) => {
+                let mut buffer = ryu::Buffer::new();
+                let printed = buffer.format(d.0);
+                f.write_str(printed)
+            }
+            Float::Exact(d) => {
+                write!(f, "{}M", d)
+            }
+        }
+    }
 }
