@@ -95,6 +95,7 @@ impl Display for Expr<'_> {
     }
 }
 
+#[inline]
 fn write_collection<'a, C>(
     f: &mut std::fmt::Formatter,
     c: C,
@@ -128,6 +129,7 @@ pub enum Integer {
 }
 
 impl Display for Integer {
+    #[inline]
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Integer::Exact(i) => {
@@ -147,6 +149,7 @@ pub enum Float {
 }
 
 impl Display for Float {
+    #[inline]
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Float::Double(d) => {
